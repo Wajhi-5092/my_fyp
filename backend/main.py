@@ -36,4 +36,6 @@ async def generate_content(req: PromptRequest):
             contents=req.prompt,
         )
     )
-    return {"text": response.text}
+    return {"response": response}
+#start backend server with:
+#uvicorn main:app --reload --host 0.0.0.0 --port 8000

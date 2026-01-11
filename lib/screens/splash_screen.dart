@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_fyp/screens/login_screen.dart';
+//import 'package:my_fyp/services/gemini.dart';
 import 'dart:async';
-import '../services/gemini.dart';
+
 import '../utils/internet_check.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,27 +20,35 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    // Animation controller for fade-in effect
+    // ⏱ Increase this duration to increase animation time
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 4), // WAS 2 seconds
     )..forward();
 
+    // Check internet and navigate after splash delay
     _checkInternetAndNavigate();
   }
 
   Future<void> _checkInternetAndNavigate() async {
-    await Future.delayed(const Duration(seconds: 2));
+    // ⏱ Splash screen delay
+    // Increase this to keep splash screen longer
+    await Future.delayed(const Duration(seconds: 4)); // WAS 2 seconds
 
+    // Check internet connection
     final online = await hasInternet();
 
     if (!mounted) return;
 
     if (online) {
+      // Navigate to main screen if internet is available
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const GeminiDemo()),
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
     } else {
+      // Show dialog if no internet
       _showNoInternetDialog();
     }
   }
@@ -54,6 +64,7 @@ class _SplashScreenState extends State<SplashScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              // Retry internet check
               _checkInternetAndNavigate();
             },
             child: const Text("Retry"),
@@ -65,6 +76,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
+    // Dispose animation controller to avoid memory leak
     _controller.dispose();
     super.dispose();
   }
@@ -72,27 +84,23 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: Center(
         child: FadeTransition(
           opacity: _controller,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.mic_rounded, size: 90, color: Colors.blueAccent),
-              SizedBox(height: 16),
-              Text(
-                "VoiceNoteX",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                "Speak. Think. Create.",
-                style: TextStyle(color: Colors.white70),
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // App logo (transparent PNG)
+                  Image.asset(
+                    'assets/icon/app_icon1.png',
+                    width: 320,
+                    height: 320,
+                  ),
+                ],
               ),
             ],
           ),
