@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static String get baseUrl {
-    if (kIsWeb) return "http://192.168.100.199:8000"; // Web must use LAN IP
-    if (Platform.isAndroid) return "http://10.0.2.2:8000"; // Android emulator / MuMu
-    if (Platform.isIOS) return "http://localhost:8000";    // iOS simulator
-    return "http://192.168.100.199:8000";                  // Fallback / real device
+    if (kIsWeb) return "http://192.168.100.58:8000"; // Web must use LAN IP
+    if (Platform.isAndroid)return "http://10.0.2.2:8000"; // Android emulator / MuMu
+    if (Platform.isIOS) return "http://localhost:8000"; // iOS simulator
+    return "http://192.168.100.58:8000"; // Fallback / real device
   }
 
   static Future<String> generate(String prompt) async {
@@ -23,7 +23,8 @@ class ApiService {
       return data["text"];
     } else {
       throw Exception(
-          "Failed to generate content: ${response.statusCode} ${response.body}");
+        "Failed to generate content: ${response.statusCode} ${response.body}",
+      );
     }
   }
 }

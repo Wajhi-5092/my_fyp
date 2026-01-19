@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_fyp/screens/home_screen.dart';
 import '../widgets/login_signup_widget.dart';
 import 'login_screen.dart';
 
@@ -55,7 +56,17 @@ class SignupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                GradientButton(label: "SIGN UP", onTap: () {}),
+                GradientButton(
+                  label: "SIGN UP",
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                ),
 
                 const SizedBox(height: 20),
                 Row(

@@ -12,6 +12,9 @@ class SpeechService {
     _speech.listen(
       onResult: (result) => onResult(result.recognizedWords),
       listenOptions: SpeechListenOptions(partialResults: true),
+      pauseFor: const Duration(
+        seconds: 10,
+      ), // Increased to allow pauses in speech
     );
     isListening = true;
   }

@@ -7,17 +7,20 @@ class CustomTextField extends StatelessWidget {
   final String hint;
   final IconData icon;
   final bool isPassword;
+  final TextEditingController? controller;
 
   const CustomTextField({
     super.key,
     required this.hint,
     required this.icon,
     this.isPassword = false,
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -53,21 +56,25 @@ class GradientButton extends StatelessWidget {
         height: 55,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-              colors: [Color(0xFF00E5FF), Color(0xFF007AFF)]),
+            colors: [Color(0xFF00E5FF), Color(0xFF007AFF)],
+          ),
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
               color: Colors.cyan.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
-            )
+            ),
           ],
         ),
         child: Center(
           child: Text(
             label,
             style: const TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

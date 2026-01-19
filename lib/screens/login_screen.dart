@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_fyp/screens/home_screen.dart';
 import '../widgets/login_signup_widget.dart';
 import 'signup_screen.dart';
 
@@ -24,13 +25,15 @@ class _LoginScreenState extends State<LoginScreen>
       duration: const Duration(seconds: 2),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
   }
@@ -75,9 +78,10 @@ class _LoginScreenState extends State<LoginScreen>
                 const Text(
                   "Welcome Back",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Text(
                   "Login to your VoiceNoteX account",
@@ -85,10 +89,16 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 const SizedBox(height: 50),
 
-                const CustomTextField(hint: "Email", icon: Icons.email_outlined),
+                const CustomTextField(
+                  hint: "Email",
+                  icon: Icons.email_outlined,
+                ),
                 const SizedBox(height: 20),
                 const CustomTextField(
-                    hint: "Password", icon: Icons.lock_outline, isPassword: true),
+                  hint: "Password",
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                ),
                 const SizedBox(height: 10),
 
                 Align(
@@ -103,27 +113,41 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
 
                 const SizedBox(height: 30),
-                GradientButton(label: "LOGIN", onTap: () {}),
+                GradientButton(
+                  label: "LOGIN",
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                ),
 
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?",
-                        style: TextStyle(color: Colors.white70)),
+                    const Text(
+                      "Don't have an account?",
+                      style: TextStyle(color: Colors.white70),
+                    ),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignupScreen()),
+                            builder: (context) => const SignupScreen(),
+                          ),
                         );
                       },
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                            color: Color(0xFF00E5FF),
-                            fontWeight: FontWeight.bold),
+                          color: Color(0xFF00E5FF),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
