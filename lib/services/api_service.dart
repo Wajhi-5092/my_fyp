@@ -5,9 +5,15 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static String get baseUrl {
-    if (kIsWeb) return "http://192.168.100.58:8000"; // Web must use LAN IP
-    if (Platform.isAndroid)return "http://10.0.2.2:8000"; // Android emulator / MuMu
-    if (Platform.isIOS) return "http://localhost:8000"; // iOS simulator
+    if (kIsWeb) return "http://127.0.0.1:8000";
+    if (Platform.isAndroid)
+      return "http://10.0.2.2:8000"; // Android emulator / MuMu
+    if (Platform.isIOS ||
+        Platform.isMacOS ||
+        Platform.isWindows ||
+        Platform.isLinux) {
+      return "http://127.0.0.1:8000";
+    }
     return "http://192.168.100.58:8000"; // Fallback / real device
   }
 
