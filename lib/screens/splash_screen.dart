@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_fyp/screens/login_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
@@ -32,9 +33,45 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    final online = await hasInternet();
+
+    if (online) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } else {
+      if (!mounted) return;
+      _showNoInternetDialog();
+    }
+  }
+
+  Future<bool> hasInternet() async {
+    final List<ConnectivityResult> connectivityResult = await Connectivity()
+        .checkConnectivity();
+    return !connectivityResult.contains(ConnectivityResult.none);
+  }
+
+  void _showNoInternetDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text("No Internet Connection"),
+        content: const Text(
+          "Please check your internet connection and try again.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _checkInternetAndNavigate();
+            },
+            child: const Text("Retry"),
+          ),
+        ],
+      ),
     );
   }
 
