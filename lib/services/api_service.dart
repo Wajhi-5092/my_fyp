@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static String get baseUrl {
     if (kIsWeb) return "http://127.0.0.1:8000";
-    if (Platform.isAndroid)
-      return "http://10.0.2.2:8000"; // Android emulator / MuMu
+    if (Platform.isAndroid) {
+       //return "http://10.0.2.2:8000"; // Use this for Android Emulator
+      return "http://192.168.18.65:8000"; // Use this for Physical Device
+    }
     if (Platform.isIOS ||
         Platform.isMacOS ||
         Platform.isWindows ||
