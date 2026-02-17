@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_fyp/screens/home_screen.dart';
+import '../services/api_service.dart';
 import '../widgets/login_signup_widget.dart';
+import '../widgets/custom_snackbar.dart';
 import 'signup_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,10 +18,15 @@ class _LoginScreenState extends State<LoginScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
 
   @override
   void initState() {
     super.initState();
+
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
 
     _controller = AnimationController(
       vsync: this,
@@ -40,6 +48,8 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -89,12 +99,14 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 const SizedBox(height: 50),
 
-                const CustomTextField(
+                CustomTextField(
+                  controller: _emailController,
                   hint: "Email",
                   icon: Icons.email_outlined,
                 ),
                 const SizedBox(height: 20),
-                const CustomTextField(
+                CustomTextField(
+                  controller: _passwordController,
                   hint: "Password",
                   icon: Icons.lock_outline,
                   isPassword: true,
@@ -104,7 +116,14 @@ class _LoginScreenState extends State<LoginScreen>
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       "Forgot Password?",
                       style: TextStyle(color: Color(0xFF00E5FF)),
@@ -115,13 +134,40 @@ class _LoginScreenState extends State<LoginScreen>
                 const SizedBox(height: 30),
                 GradientButton(
                   label: "LOGIN",
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
+                  onTap: () async {
+                    if (_emailController.text.isEmpty ||
+                        _passwordController.text.isEmpty) {
+                      CustomSnackBar.show(
+                        context,
+                        "Please fill in all credentials",
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    final res = await ApiService.login(
+                      _emailController.text,
+                      _passwordController.text,
                     );
+
+                    if (res["success"] == true) {
+                      if (context.mounted) {
+                        CustomSnackBar.show(context, "Login Successful");
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const HomeScreen()),
+                        );
+                      }
+                    } else {
+                      if (context.mounted) {
+                        CustomSnackBar.show(
+                          context,
+                          res["error"] ?? "Invalid Credentials",
+                          isError: true,
+                        );
+                      }
+                    }
                   },
                 ),
 
