@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_fyp/screens/speech_screen.dart';
-import 'package:my_fyp/services/gemini.dart';
-import 'package:my_fyp/screens/login_screen.dart';
+import '../../speech_ai/screens/speech_screen.dart';
+import '../../speech_ai/services/gemini.dart';
+import '../../auth/screens/login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

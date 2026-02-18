@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../services/api_service.dart';
+import '../../../core/services/api_service.dart';
 import '../widgets/login_signup_widget.dart';
-import '../widgets/custom_snackbar.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 import 'login_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {

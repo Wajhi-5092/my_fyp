@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_fyp/screens/home_screen.dart';
-import '../services/api_service.dart';
+import '../../home/screens/home_screen.dart';
+import '../../../core/services/api_service.dart';
 import '../widgets/login_signup_widget.dart';
-import '../widgets/custom_snackbar.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 

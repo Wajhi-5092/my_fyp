@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:my_fyp/services/gemini.dart';
-import 'package:my_fyp/services/speech_service.dart';
+import '../services/gemini.dart';
+import '../services/speech_service.dart';
 
 class SpeechScreen extends StatefulWidget {
   const SpeechScreen({super.key});

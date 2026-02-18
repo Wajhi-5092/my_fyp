@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_fyp/screens/splash_screen.dart';
+import 'features/splash/screens/splash_screen.dart';
 //import 'screens/speech_screen.dart'; // optional
 //import 'services/gemini.dart';
 

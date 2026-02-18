@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:my_fyp/widgets/login_signup_widget.dart';
-import 'api_service.dart';
+import '../../auth/widgets/login_signup_widget.dart';
+import '../../../core/services/api_service.dart';
 
 class GeminiScreen extends StatefulWidget {
   final String? initialPrompt;

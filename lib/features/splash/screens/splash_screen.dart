@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_fyp/screens/login_screen.dart';
+import '../../auth/screens/login_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 
