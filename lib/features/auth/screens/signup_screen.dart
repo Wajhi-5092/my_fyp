@@ -38,7 +38,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF0F111A),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -167,7 +167,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: const Text(
                         "Login Now",
                         style: TextStyle(
-                          color: Color(0xFF00E5FF),
+                          color: Color(0xFFFFB300),
                           fontWeight: FontWeight.bold,
                         ),
                       ),

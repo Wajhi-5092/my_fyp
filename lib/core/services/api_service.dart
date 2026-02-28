@@ -7,8 +7,8 @@ class ApiService {
   static String get baseUrl {
     if (kIsWeb) return "http://127.0.0.1:8000";
     if (Platform.isAndroid) {
-      return "http://192.168.100.199:8000"; // Use this for Android Emulator
-      //return "http://192.168.18.65:8000"; // Use this for Physical Device
+      //return "http://192.168.100.199:8000"; // Use this for Android Emulator
+      return "http://192.168.18.65:8000"; // Use this for Physical Device
     }
     if (Platform.isIOS ||
         Platform.isMacOS ||
@@ -78,21 +78,29 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  /// ================= GENERATE =================
-  static Future<String> generate(String prompt) async {
+  /// ================= CHAT =================
+  static Future<Map<String, dynamic>> chat({
+    required String prompt,
+    List<Map<String, String>> history = const [],
+    List<String> styles = const ["short"],
+    bool codeRequest = false,
+    bool onlyCode = false,
+    String? language,
+  }) async {
     final response = await http.post(
-      Uri.parse("$baseUrl/generate"),
+      Uri.parse("$baseUrl/chat"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"prompt": prompt}),
+      body: jsonEncode({
+        "prompt": prompt,
+        "history": history,
+        "styles": styles,
+        "code_request": codeRequest,
+        "only_code": onlyCode,
+        "language": language,
+      }),
     );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data["text"] ?? "";
-    } else {
-      final error = _parseError(response);
-      throw Exception(error);
-    }
+    return _handleResponse(response);
   }
 
   /// ================= COMMON RESPONSE HANDLER =================
@@ -106,15 +114,6 @@ class ApiService {
         "success": false,
         "error": data["detail"] ?? data["error"] ?? "Something went wrong",
       };
-    }
-  }
-
-  static String _parseError(http.Response response) {
-    try {
-      final data = jsonDecode(response.body);
-      return data["detail"] ?? data["error"] ?? "Server Error";
-    } catch (_) {
-      return "Server Error ${response.statusCode}";
     }
   }
 }

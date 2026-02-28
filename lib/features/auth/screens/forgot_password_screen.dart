@@ -146,7 +146,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF0F111A),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -215,7 +215,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           : "Resend OTP in $_start seconds",
                       style: TextStyle(
                         color: _canResend
-                            ? const Color(0xFF00E5FF)
+                            ? const Color(0xFFFFB300)
                             : Colors.white54,
                         fontSize: 16,
                       ),

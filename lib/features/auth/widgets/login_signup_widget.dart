@@ -26,9 +26,9 @@ class CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white24),
-        prefixIcon: Icon(icon, color: const Color(0xFF00E5FF)),
+        prefixIcon: Icon(icon, color: const Color(0xFFFFB300)),
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.05),
+        fillColor: Colors.white.withValues(alpha: 0.03),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
@@ -56,12 +56,12 @@ class GradientButton extends StatelessWidget {
         height: 55,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF00E5FF), Color(0xFF007AFF)],
+            colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
           ),
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.cyan.withValues(alpha: 0.3),
+              color: const Color(0xFFFFB300).withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -71,7 +71,7 @@ class GradientButton extends StatelessWidget {
           child: Text(
             label,
             style: const TextStyle(
-              color: Colors.white,
+              color: Color(0xFF0F111A),
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

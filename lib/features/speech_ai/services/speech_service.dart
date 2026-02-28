@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class SpeechService {
@@ -5,13 +6,14 @@ class SpeechService {
 
   bool get isListening => _speech.isListening;
 
-  Future<bool> init() async {
+  Future<bool> init({Function(String)? onStatus}) async {
     return await _speech.initialize(
       onStatus: (status) {
-        print("Speech status: $status");
+        debugPrint("Speech status: $status");
+        if (onStatus != null) onStatus(status);
       },
       onError: (error) {
-        print("Speech error: $error");
+        debugPrint("Speech error: $error");
       },
       debugLogging: true,
     );
@@ -19,7 +21,7 @@ class SpeechService {
 
   Future<void> listen(Function(String) onResult) async {
     if (!_speech.isAvailable) {
-      print("Speech not available");
+      debugPrint("Speech not available");
       return;
     }
 
@@ -29,8 +31,11 @@ class SpeechService {
       },
       listenOptions: SpeechListenOptions(
         partialResults: true,
+        cancelOnError: false,
+        listenMode: ListenMode.dictation, // Smoother for continuous speech
       ),
-      pauseFor: const Duration(seconds: 5),
+      pauseFor: const Duration(seconds: 30), // Increased from 5s
+      listenFor: const Duration(minutes: 5),
       localeId: 'en_US',
     );
   }

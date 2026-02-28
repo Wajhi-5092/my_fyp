@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF0F111A),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen>
                     },
                     child: const Text(
                       "Forgot Password?",
-                      style: TextStyle(color: Color(0xFF00E5FF)),
+                      style: TextStyle(color: Color(0xFFFFB300)),
                     ),
                   ),
                 ),
@@ -191,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen>
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Color(0xFF00E5FF),
+                          color: Color(0xFFFFB300),
                           fontWeight: FontWeight.bold,
                         ),
                       ),

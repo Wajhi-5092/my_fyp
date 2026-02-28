@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../speech_ai/screens/speech_screen.dart';
-import '../../speech_ai/services/gemini.dart';
+import 'ai_screen.dart';
 import '../../auth/screens/login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,7 +9,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF0F111A),
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           "Dashboard",
@@ -60,10 +61,12 @@ class HomeScreen extends StatelessWidget {
                 "AI Assistant",
                 "Chat with advanced AI",
                 Icons.auto_awesome,
-                const Color(0xFF00E5FF),
+                const Color(0xFFFFB300),
                 () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GeminiScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const AiAssistantScreen(),
+                  ),
                 ),
               ),
 
@@ -75,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                 "Speech to Text",
                 "Convert voice to text instantly",
                 Icons.mic,
-                const Color(0xFF007AFF),
+                const Color(0xFF536DFE),
                 () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const SpeechScreen()),
@@ -101,7 +104,7 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: const Color(0xFF1B1F32),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           boxShadow: [
@@ -117,7 +120,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.2),
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 30),
