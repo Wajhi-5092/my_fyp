@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../core/services/style_service.dart';
+import 'package:my_fyp/features/home/widgets/style_dialog.dart';
 import '../../speech_ai/screens/speech_screen.dart';
 import 'ai_screen.dart';
 import '../../auth/screens/login_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<String> get _selectedStyles => StyleService.selectedStyles;
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +71,36 @@ class HomeScreen extends StatelessWidget {
                 "Chat with advanced AI",
                 Icons.auto_awesome,
                 const Color(0xFFFFB300),
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AiAssistantScreen(),
+                () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AiAssistantScreen(),
+                    ),
+                  );
+                  // Refresh state once the screen is popped to show style updates
+                  setState(() {});
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              _buildFeatureCard(
+                context,
+                "Select style",
+                _selectedStyles.isNotEmpty
+                    ? "Selected: ${_selectedStyles.map((s) => s[0].toUpperCase() + s.substring(1)).join(', ')}"
+                    : "Select style for your Question",
+                Icons.style,
+                const Color(0xFFFFB300),
+                () => showDialog(
+                  context: context,
+                  builder: (context) => StyleDialog(
+                    initialStyles: _selectedStyles,
+                    onApply: (List<String> styles) async {
+                      await StyleService.saveStyles(styles);
+                      setState(() {});
+                    },
                   ),
                 ),
               ),
@@ -106,10 +141,10 @@ class HomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1B1F32),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -120,7 +155,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 30),
@@ -142,7 +177,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
+                      color: Colors.white.withOpacity(0.6),
                     ),
                   ),
                 ],
@@ -150,7 +185,7 @@ class HomeScreen extends StatelessWidget {
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Colors.white.withValues(alpha: 0.5),
+              color: Colors.white.withOpacity(0.5),
               size: 16,
             ),
           ],

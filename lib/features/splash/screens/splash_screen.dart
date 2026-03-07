@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../auth/screens/login_screen.dart';
+import '../../home/screens/home_screen.dart';
+import '../../../core/services/style_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 
@@ -37,9 +39,15 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (online) {
       if (!mounted) return;
+
+      final userEmail = StyleService.currentUserEmail;
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(
+          builder: (_) =>
+              userEmail != null ? const HomeScreen() : const LoginScreen(),
+        ),
       );
     } else {
       if (!mounted) return;

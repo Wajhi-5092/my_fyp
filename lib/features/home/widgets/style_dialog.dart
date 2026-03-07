@@ -21,6 +21,7 @@ class _StyleDialogState extends State<StyleDialog> {
     "Descriptive",
     "Long",
     "Professional",
+    "Bulletpoints",
   ];
 
   @override
@@ -36,7 +37,7 @@ class _StyleDialogState extends State<StyleDialog> {
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(28),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        side: BorderSide(color: Colors.white.withOpacity(0.1)),
       ),
       title: const Column(
         children: [
@@ -72,18 +73,18 @@ class _StyleDialogState extends State<StyleDialog> {
               label: Text(style),
               selected: isSelected,
               showCheckmark: true,
-              selectedColor: const Color(0xFFFFB300).withValues(alpha: 0.2),
+              selectedColor: const Color(0xFFFFB300).withOpacity(0.2),
               checkmarkColor: const Color(0xFFFFB300),
               labelStyle: TextStyle(
                 color: isSelected ? const Color(0xFFFFB300) : Colors.white,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
-              backgroundColor: Colors.white.withValues(alpha: 0.05),
+              backgroundColor: Colors.white.withOpacity(0.05),
               shape: StadiumBorder(
                 side: BorderSide(
                   color: isSelected
                       ? const Color(0xFFFFB300)
-                      : Colors.white.withValues(alpha: 0.1),
+                      : Colors.white.withOpacity(0.1),
                 ),
               ),
               onSelected: (val) {

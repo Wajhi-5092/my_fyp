@@ -5,6 +5,7 @@ import '../widgets/login_signup_widget.dart';
 import '../../../core/widgets/custom_snackbar.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
+import '../../../core/services/style_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -151,6 +152,7 @@ class _LoginScreenState extends State<LoginScreen>
                     );
 
                     if (res["success"] == true) {
+                      await StyleService.saveUserEmail(_emailController.text);
                       if (context.mounted) {
                         CustomSnackBar.show(context, "Login Successful");
 

@@ -7,8 +7,8 @@ class ApiService {
   static String get baseUrl {
     if (kIsWeb) return "http://127.0.0.1:8000";
     if (Platform.isAndroid) {
-      //return "http://192.168.100.199:8000"; // Use this for Android Emulator
-      return "http://192.168.18.65:8000"; // Use this for Physical Device
+      return "http://192.168.100.199:8000"; // Use this for Android Emulator
+      //return "http://192.168.18.65:8000"; // Use this for Physical Device
     }
     if (Platform.isIOS ||
         Platform.isMacOS ||
@@ -81,6 +81,8 @@ class ApiService {
   /// ================= CHAT =================
   static Future<Map<String, dynamic>> chat({
     required String prompt,
+    required String email,
+    required String chatId,
     List<Map<String, String>> history = const [],
     List<String> styles = const ["short"],
     bool codeRequest = false,
@@ -92,6 +94,8 @@ class ApiService {
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "prompt": prompt,
+        "email": email,
+        "chat_id": chatId,
         "history": history,
         "styles": styles,
         "code_request": codeRequest,
@@ -100,6 +104,30 @@ class ApiService {
       }),
     );
 
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> getChats(String email) async {
+    final response = await http.get(Uri.parse("$baseUrl/chats/$email"));
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> getChatHistory(String chatId) async {
+    final response = await http.get(Uri.parse("$baseUrl/chat-history/$chatId"));
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> newChat(String email) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/new-chat"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"email": email}),
+    );
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> clearChats(String email) async {
+    final response = await http.delete(Uri.parse("$baseUrl/chats/$email"));
     return _handleResponse(response);
   }
 

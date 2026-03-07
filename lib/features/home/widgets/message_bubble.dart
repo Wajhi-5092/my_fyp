@@ -18,9 +18,12 @@ class _MessageBubbleState extends State<MessageBubble> {
   Widget build(BuildContext context) {
     bool isUser = widget.msg["role"] == "user";
 
+    final String text = (widget.msg["text"] ?? "").toString();
+    if (text.isEmpty) return const SizedBox.shrink();
+
     // Detect code blocks
     final regex = RegExp(r'```(\w*)\n([\s\S]*?)```');
-    final matches = regex.allMatches(widget.msg["text"]);
+    final matches = regex.allMatches(text);
 
     List<Widget> children = [];
     int lastEnd = 0;
@@ -33,35 +36,36 @@ class _MessageBubbleState extends State<MessageBubble> {
             style: TextStyle(
               color: isUser
                   ? const Color(0xFF0F111A)
-                  : Colors.white.withValues(alpha: 0.9),
+                  : Colors.white.withOpacity(0.9),
               fontSize: 15,
             ),
           ),
         );
       }
-      final lang = match.group(1) ?? 'text';
       final code = match.group(2) ?? '';
+      final lang = match.group(1)?.toLowerCase() ?? 'text';
+
       children.add(
         Container(
           width: double.infinity,
           margin: const EdgeInsets.only(top: 8, bottom: 8),
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isUser
                 ? const Color(0xFFFF8F00)
-                : Colors.white.withValues(alpha: 0.05),
+                : const Color(0xFF0F111A).withOpacity(0.5),
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: HighlightView(
-              code,
-              language: lang,
+              code.trim(),
+              language: lang.isEmpty ? 'text' : lang,
               theme: tomorrowNightTheme,
               textStyle: const TextStyle(
                 fontFamily: 'SourceCodePro',
                 fontSize: 13,
-                color: Colors.white,
               ),
             ),
           ),
@@ -70,14 +74,14 @@ class _MessageBubbleState extends State<MessageBubble> {
       lastEnd = match.end;
     }
 
-    if (lastEnd < widget.msg["text"].length) {
+    if (lastEnd < text.length) {
       children.add(
         Text(
-          widget.msg["text"].substring(lastEnd).trim(),
+          text.substring(lastEnd).trim(),
           style: TextStyle(
             color: isUser
                 ? const Color(0xFF0F111A)
-                : Colors.white.withValues(alpha: 0.9),
+                : Colors.white.withOpacity(0.9),
             fontSize: 15,
           ),
         ),
@@ -113,12 +117,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                     ),
                     border: isUser
                         ? null
-                        : Border.all(
-                            color: Colors.white.withValues(alpha: 0.1),
-                          ),
+                        : Border.all(color: Colors.white.withOpacity(0.1)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
+                        color: Colors.black.withOpacity(0.05),
                         blurRadius: 5,
                         offset: const Offset(0, 2),
                       ),

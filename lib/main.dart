@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'core/services/style_service.dart';
 import 'features/splash/screens/splash_screen.dart';
 //import 'screens/speech_screen.dart'; // optional
 //import 'services/gemini.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await StyleService.init();
   runApp(const MyApp());
 }
 
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 255, 254, 250),
-          brightness: Brightness.light ,
+          brightness: Brightness.light,
         ),
       ),
       home: const SplashScreen(),

@@ -8,3 +8,6 @@ python-jose
 python-multipart
 openai
 deepgram-sdk
+pymongo
+pygments
+bcrypt

@@ -127,14 +127,14 @@ class _SpeechScreenState extends State<SpeechScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1B1F32).withValues(alpha: 0.8),
+                  color: const Color(0xFF1B1F32).withOpacity(0.8),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white.withOpacity(0.15),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: Colors.black.withOpacity(0.2),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -150,7 +150,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                     height: 1.6,
                     color: _isListening
                         ? Colors.white
-                        : Colors.white.withValues(alpha: 0.8),
+                        : Colors.white.withOpacity(0.8),
                     fontWeight: _isListening
                         ? FontWeight.w500
                         : FontWeight.normal,
@@ -245,7 +245,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                                     color: _isListening
                                         ? const Color(
                                             0xFFFFB300,
-                                          ).withValues(alpha: 0.4)
+                                          ).withOpacity(0.4)
                                         : Colors.black45,
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
@@ -264,7 +264,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                         Text(
                           _isListening ? "Listening..." : "Tap to Speak",
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.6),
+                            color: Colors.white.withOpacity(0.6),
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             letterSpacing: 1.1,
@@ -294,17 +294,17 @@ class _SpeechScreenState extends State<SpeechScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: isOutline ? color.withValues(alpha: 0.1) : null,
+            color: isOutline ? color.withOpacity(0.1) : null,
             gradient: isOutline
                 ? null
-                : LinearGradient(colors: [color, color.withValues(alpha: 0.7)]),
+                : LinearGradient(colors: [color, color.withOpacity(0.7)]),
             borderRadius: BorderRadius.circular(30),
             border: isOutline ? Border.all(color: color, width: 1.5) : null,
             boxShadow: isOutline
                 ? []
                 : [
                     BoxShadow(
-                      color: color.withValues(alpha: 0.3),
+                      color: color.withOpacity(0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     ),
