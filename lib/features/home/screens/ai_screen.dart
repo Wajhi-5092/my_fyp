@@ -27,6 +27,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   bool isTyping = false;
   bool stopTyping = false;
   bool isLoadingChats = false;
+  bool isLoadingHistory = false;
 
   @override
   void initState() {
@@ -67,13 +68,23 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     setState(() {
       currentChatId = chatId;
       messages = [];
+      isLoadingHistory = true;
     });
-    final res = await ApiService.getChatHistory(chatId);
-    if (res["success"] && mounted) {
-      setState(() {
-        // Reverse because list is reverse: true
-        messages = List.from(res["data"]["messages"].reversed);
-      });
+    try {
+      final res = await ApiService.getChatHistory(chatId);
+      if (res["success"] && mounted) {
+        setState(() {
+          // Reverse because list is reverse: true
+          // Map 'content' (backend) to 'text' (frontend)
+          messages = (res["data"]["messages"] as List).reversed.map((m) {
+            return {"role": m["role"], "text": m["text"] ?? m["content"] ?? ""};
+          }).toList();
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => isLoadingHistory = false);
+      }
     }
   }
 
@@ -128,11 +139,11 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
     // Prepare history for backend (chronological order)
     List<Map<String, String>> history = messages.reversed
-        .where((m) => m["text"].toString().isNotEmpty)
+        .where((m) => (m["text"] ?? m["content"] ?? "").toString().isNotEmpty)
         .map(
           (m) => {
             "role": m["role"].toString(),
-            "content": m["text"].toString(),
+            "content": (m["text"] ?? m["content"] ?? "").toString(),
           },
         )
         .toList();
@@ -293,7 +304,11 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       body: Column(
         children: [
           Expanded(
-            child: messages.isEmpty && !isTyping
+            child: isLoadingHistory
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.blueAccent),
+                  )
+                : messages.isEmpty && !isTyping
                 ? Center(
                     child: TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0.0, end: 1.0),

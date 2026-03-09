@@ -92,6 +92,13 @@ async def clear_user_chats(email: str):
     result = db.chats.delete_many({"user_email": email})
     return {"success": True, "deleted_count": result.deleted_count}
 
+@router.delete("/chat/{chat_id}")
+async def delete_single_chat(chat_id: str):
+    result = db.chats.delete_one({"chat_id": chat_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    return {"success": True}
+
 @router.post("/transcribe")
 async def transcribe_audio(file: UploadFile = File(...)):
     if not deepgram_client:

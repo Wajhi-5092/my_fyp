@@ -157,33 +157,19 @@ class ChatDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            /// 3-DOT MENU
-                            trailing: PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_vert, size: 18),
-                              onSelected: (value) {
-                                if (value == "delete") {
-                                  _showDeleteConfirmation(
-                                    context,
-                                    chat['chat_id'],
-                                  );
-                                }
+                            /// DELETE ICON
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                size: 18,
+                                color: Color.fromARGB(255, 173, 41, 41),
+                              ),
+                              onPressed: () {
+                                _showDeleteConfirmation(
+                                  context,
+                                  chat['chat_id'],
+                                );
                               },
-                              itemBuilder: (context) => const [
-                                PopupMenuItem(
-                                  value: "delete",
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                        size: 18,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text("Delete Chat"),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ),
 
                             onTap: () => onChatSelected(chat['chat_id']),
