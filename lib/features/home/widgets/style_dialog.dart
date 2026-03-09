@@ -16,6 +16,7 @@ class StyleDialog extends StatefulWidget {
 
 class _StyleDialogState extends State<StyleDialog> {
   late List<String> tempSelected;
+
   final List<String> allStyles = [
     "Short",
     "Descriptive",
@@ -33,93 +34,127 @@ class _StyleDialogState extends State<StyleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: const Color(0xFF0F172A),
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-        side: BorderSide(color: Colors.white.withOpacity(0.1)),
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
       ),
-      title: const Column(
+
+      // TITLE
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.auto_awesome, color: Color(0xFFFFB300), size: 30),
-          SizedBox(height: 10),
-          Text(
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFB300).withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: Color(0xFFFFB300),
+              size: 28,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
             "Response Style",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: 22,
               color: Colors.white,
+              letterSpacing: 0.5,
             ),
           ),
-          Text(
+          const SizedBox(height: 4),
+          const Text(
             "How should the AI talk to you?",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white54,
-              fontWeight: FontWeight.normal,
+              color: Colors.white60,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],
       ),
-      content: Padding(
-        padding: const EdgeInsets.only(top: 10),
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 10,
-          runSpacing: 10,
-          children: allStyles.map((style) {
-            final isSelected = tempSelected.contains(style.toLowerCase());
-            return FilterChip(
-              label: Text(style),
-              selected: isSelected,
-              showCheckmark: true,
-              selectedColor: const Color(0xFFFFB300).withOpacity(0.2),
-              checkmarkColor: const Color(0xFFFFB300),
-              labelStyle: TextStyle(
-                color: isSelected ? const Color(0xFFFFB300) : Colors.white,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              backgroundColor: Colors.white.withOpacity(0.05),
-              shape: StadiumBorder(
-                side: BorderSide(
+
+      // CONTENT
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 10,
+            children: allStyles.map((style) {
+              final isSelected = tempSelected.contains(style.toLowerCase());
+
+              return FilterChip(
+                label: Text(style),
+                selected: isSelected,
+                onSelected: (val) {
+                  setState(() {
+                    if (val) {
+                      tempSelected.add(style.toLowerCase());
+                    } else {
+                      tempSelected.remove(style.toLowerCase());
+                    }
+                  });
+                },
+                showCheckmark: true,
+                labelStyle: TextStyle(
                   color: isSelected
-                      ? const Color(0xFFFFB300)
-                      : Colors.white.withOpacity(0.1),
+                      ? Colors.black87
+                      : const Color.fromARGB(179, 0, 0, 0),
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.bold,
+                  fontSize: 15,
                 ),
-              ),
-              onSelected: (val) {
-                setState(() {
-                  if (val) {
-                    tempSelected.add(style.toLowerCase());
-                  } else {
-                    tempSelected.remove(style.toLowerCase());
-                  }
-                });
-              },
-            );
-          }).toList(),
+                selectedColor: const Color.fromARGB(255, 244, 220, 114),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ),
-      actionsPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+
+      // ACTIONS
+      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
       actions: [
         Row(
           children: [
             Expanded(
-              child: TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.white54),
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: const BorderSide(color: Colors.white10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(
+                    color: Color.fromARGB(250, 255, 255, 255),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFB300),
-                  foregroundColor: const Color(0xFF0F111A),
+                  foregroundColor: const Color(0xFF0F172A),
                   elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 onPressed: () {

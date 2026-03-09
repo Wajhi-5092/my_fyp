@@ -131,6 +131,11 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  static Future<Map<String, dynamic>> deleteChat(String chatId) async {
+    final response = await http.delete(Uri.parse("$baseUrl/chat/$chatId"));
+    return _handleResponse(response);
+  }
+
   /// ================= COMMON RESPONSE HANDLER =================
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final data = jsonDecode(response.body);

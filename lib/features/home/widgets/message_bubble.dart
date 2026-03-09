@@ -36,7 +36,7 @@ class _MessageBubbleState extends State<MessageBubble> {
             style: TextStyle(
               color: isUser
                   ? const Color(0xFF0F111A)
-                  : Colors.white.withOpacity(0.9),
+                  : Colors.white.withValues(alpha: 0.9),
               fontSize: 15,
             ),
           ),
@@ -53,9 +53,9 @@ class _MessageBubbleState extends State<MessageBubble> {
           decoration: BoxDecoration(
             color: isUser
                 ? const Color(0xFFFF8F00)
-                : const Color(0xFF0F111A).withOpacity(0.5),
+                : const Color(0xFF0F111A).withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -81,7 +81,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           style: TextStyle(
             color: isUser
                 ? const Color(0xFF0F111A)
-                : Colors.white.withOpacity(0.9),
+                : Colors.white.withValues(alpha: 0.9),
             fontSize: 15,
           ),
         ),
@@ -117,10 +117,12 @@ class _MessageBubbleState extends State<MessageBubble> {
                     ),
                     border: isUser
                         ? null
-                        : Border.all(color: Colors.white.withOpacity(0.1)),
+                        : Border.all(
+                            color: Colors.white.withValues(alpha: 0.1),
+                          ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 5,
                         offset: const Offset(0, 2),
                       ),

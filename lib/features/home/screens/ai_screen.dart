@@ -102,6 +102,20 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     }
   }
 
+  Future<void> deleteChat(String chatId) async {
+    final res = await ApiService.deleteChat(chatId);
+    if (res["success"]) {
+      await fetchUserChats();
+      if (currentChatId == chatId) {
+        if (userChats.isNotEmpty) {
+          loadChatHistory(userChats.first['chat_id']);
+        } else {
+          await createNewChat();
+        }
+      }
+    }
+  }
+
   Future<void> sendMessage(String text) async {
     if (isTyping || userEmail == null || currentChatId == null) return;
 
@@ -224,19 +238,22 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F111A),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
         title: const Text(
           "AI Assistant",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Color.fromARGB(255, 0, 0, 0),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune, color: Colors.white),
+            icon: const Icon(Icons.tune, color: Color.fromARGB(255, 0, 0, 0)),
             onPressed: showStyleSettings,
           ),
         ],
@@ -259,9 +276,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                 Navigator.pop(context);
                 clearAllChats();
               },
+              onDeleteChat: (id) {
+                deleteChat(id);
+              },
               onLogout: () async {
                 await StyleService.logout();
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -294,7 +314,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                           Icon(
                             Icons.chat_bubble_outline_rounded,
                             size: 100,
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
                           const SizedBox(height: 24),
                           const Text(
@@ -310,7 +330,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                           Text(
                             "Ask me anything you want!",
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               fontSize: 16,
                             ),
                           ),
