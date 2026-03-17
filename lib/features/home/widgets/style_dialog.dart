@@ -34,12 +34,8 @@ class _StyleDialogState extends State<StyleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF0F172A),
-      surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-      ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
 
       // TITLE
       title: Column(
@@ -48,12 +44,17 @@ class _StyleDialogState extends State<StyleDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFB300).withValues(alpha: 0.1),
+              color: const Color.fromARGB(
+                227,
+                61,
+                80,
+                225,
+              ).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.auto_awesome,
-              color: Color(0xFFFFB300),
+              color: Color.fromARGB(255, 9, 52, 112),
               size: 28,
             ),
           ),
@@ -63,7 +64,7 @@ class _StyleDialogState extends State<StyleDialog> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 22,
-              color: Colors.white,
+              color: Color.fromARGB(255, 0, 0, 0),
               letterSpacing: 0.5,
             ),
           ),
@@ -72,7 +73,7 @@ class _StyleDialogState extends State<StyleDialog> {
             "How should the AI talk to you?",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white60,
+              color: Color.fromARGB(153, 0, 0, 0),
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -110,7 +111,7 @@ class _StyleDialogState extends State<StyleDialog> {
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.bold,
                   fontSize: 15,
                 ),
-                selectedColor: const Color.fromARGB(255, 244, 220, 114),
+                selectedColor: const Color.fromARGB(167, 69, 163, 245),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
@@ -130,7 +131,7 @@ class _StyleDialogState extends State<StyleDialog> {
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: Colors.white10),
+                  side: const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -139,7 +140,7 @@ class _StyleDialogState extends State<StyleDialog> {
                 child: const Text(
                   "Cancel",
                   style: TextStyle(
-                    color: Color.fromARGB(250, 255, 255, 255),
+                    color: Color.fromARGB(249, 0, 0, 0),
                     fontWeight: FontWeight.w700,
                   ),
                 ),

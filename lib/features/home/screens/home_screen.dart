@@ -18,48 +18,83 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F111A),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           "Dashboard",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Color.fromARGB(255, 0, 0, 0),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.fromARGB(234, 255, 255, 255),
+                Color.fromARGB(234, 255, 255, 255),
+              ], // Navy to Deep Purple
+            ),
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
+          TextButton.icon(
             onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
+            icon: const Icon(
+              Icons.logout,
+              color: Color.fromARGB(255, 239, 4, 4),
+            ),
+            label: const Text(
+              "Logout",
+              style: TextStyle(color: Color.fromARGB(255, 255, 3, 3)),
+            ),
           ),
         ],
       ),
+
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              const Text(
-                "Welcome Back!",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 33, 17, 103),
+                    Color.fromARGB(255, 66, 198, 227),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ).createShader(bounds),
+                child: const Text(
+                  "Ready to start your next note?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               const Text(
                 "Choose a feature to continue",
-                style: TextStyle(color: Colors.white54, fontSize: 16),
+                style: TextStyle(
+                  color: Color.fromARGB(137, 0, 0, 0),
+                  fontSize: 16,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
@@ -70,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 "AI Assistant",
                 "Chat with advanced AI",
                 Icons.auto_awesome,
-                const Color(0xFFFFB300),
+                const Color.fromARGB(255, 7, 192, 65),
                 () async {
                   await Navigator.push(
                     context,
@@ -139,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF1B1F32),
+          color: const Color.fromARGB(214, 14, 7, 70),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           boxShadow: [

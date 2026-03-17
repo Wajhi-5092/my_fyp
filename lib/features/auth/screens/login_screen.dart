@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F111A),
+      backgroundColor: const Color.fromARGB(255, 254, 254, 254),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -86,17 +86,33 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
 
                 const SizedBox(height: 20),
-                const Text(
-                  "Welcome Back",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 33, 17, 103),
+                      Color.fromARGB(255, 66, 198, 227),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ).createShader(bounds),
+                  child: const Text(
+                    "Welcome Back",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
                 const Text(
-                  "Login to your VoiceNoteX account",
-                  style: TextStyle(color: Colors.white54),
+                  "Login to your VoiceNoteX Account",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 9, 9, 24),
+                    fontSize: 15,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 50),
 
@@ -126,15 +142,25 @@ class _LoginScreenState extends State<LoginScreen>
                       );
                     },
                     child: const Text(
-                      "Forgot Password?",
-                      style: TextStyle(color: Color(0xFFFFB300)),
+                      "Forgot Password ?",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 30),
                 GradientButton(
-                  label: "LOGIN",
+                  label: "Sign In",
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                    fontStyle: FontStyle.normal,
+                  ),
                   onTap: () async {
                     if (_emailController.text.isEmpty ||
                         _passwordController.text.isEmpty) {
@@ -179,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen>
                   children: [
                     const Text(
                       "Don't have an account?",
-                      style: TextStyle(color: Colors.white70),
+                      style: TextStyle(color: Color.fromARGB(251, 0, 0, 0)),
                     ),
                     TextButton(
                       onPressed: () {
@@ -193,8 +219,10 @@ class _LoginScreenState extends State<LoginScreen>
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Color(0xFFFFB300),
+                          color: Color.fromARGB(255, 0, 0, 0),
                           fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          fontSize: 15,
                         ),
                       ),
                     ),

@@ -195,12 +195,10 @@ class ChatDrawer extends StatelessWidget {
               onTap: () => _showClearConfirmation(context),
             ),
 
-            /// LOGOUT
             ListTile(
-              leading: const Icon(
-                Icons.logout_rounded,
-                color: Colors.red,
-                size: 20,
+              leading: const Padding(
+                padding: EdgeInsets.only(left: 3),
+                child: Icon(Icons.logout_rounded, color: Colors.red, size: 20),
               ),
               title: const Text(
                 "Sign Out",
@@ -210,7 +208,7 @@ class ChatDrawer extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              onTap: onLogout,
+              onTap: () => _showLogoutConfirmation(context),
             ),
           ],
         ),
@@ -260,6 +258,32 @@ class ChatDrawer extends StatelessWidget {
               onClearChats();
             },
             child: const Text("Clear All", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// LOGOUT CONFIRMATION
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Sign Out?"),
+        content: const Text(
+          "Are you sure you want to sign out of your account?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              onLogout(); // Execute logout
+            },
+            child: const Text("Sign Out", style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

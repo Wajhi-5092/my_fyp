@@ -33,8 +33,8 @@ class CustomSnackBar {
           ],
         ),
         backgroundColor: isError
-            ? Colors.redAccent.withValues(alpha: 0.8)
-            : const Color(0xFF00E5FF).withValues(alpha: 0.8),
+            ? const Color.fromARGB(255, 206, 37, 37).withValues(alpha: 0.8)
+            : const Color.fromARGB(255, 1, 181, 49).withValues(alpha: 0.8),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),

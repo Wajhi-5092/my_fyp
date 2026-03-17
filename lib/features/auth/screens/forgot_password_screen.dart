@@ -146,11 +146,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F111A),
+      backgroundColor: const Color.fromARGB(255, 254, 254, 254),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -161,7 +161,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               const Text(
                 "Reset Password",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 0, 0, 0),
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
@@ -171,7 +171,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 _step == 1
                     ? "Enter your email to receive an OTP."
                     : "Enter the OTP sent to your email and your new password.",
-                style: const TextStyle(color: Colors.white54, fontSize: 16),
+                style: const TextStyle(
+                  color: Color.fromARGB(132, 0, 0, 0),
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 40),
 
@@ -215,8 +218,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           : "Resend OTP in $_start seconds",
                       style: TextStyle(
                         color: _canResend
-                            ? const Color(0xFFFFB300)
-                            : Colors.white54,
+                            ? const Color.fromARGB(255, 0, 0, 0)
+                            : const Color.fromARGB(135, 1, 17, 69),
                         fontSize: 16,
                       ),
                     ),

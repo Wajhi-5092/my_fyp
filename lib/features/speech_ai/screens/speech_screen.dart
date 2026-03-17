@@ -102,17 +102,20 @@ class _SpeechScreenState extends State<SpeechScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F111A),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           "Voice Assistant",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Color.fromARGB(255, 0, 0, 0),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
       ),
       body: SafeArea(
         child: Column(
@@ -127,18 +130,13 @@ class _SpeechScreenState extends State<SpeechScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1B1F32).withValues(alpha: 0.8),
+                  color: const Color.fromARGB(
+                    103,
+                    39,
+                    46,
+                    63,
+                  ).withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.15),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
                 ),
                 child: TextField(
                   controller: _textController,
@@ -148,9 +146,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     height: 1.6,
-                    color: _isListening
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.8),
+                    color: _isListening ? Colors.white : Colors.white,
                     fontWeight: _isListening
                         ? FontWeight.w500
                         : FontWeight.normal,

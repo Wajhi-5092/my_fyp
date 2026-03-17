@@ -38,11 +38,11 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F111A),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -55,7 +55,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const Text(
                   "Create Account",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 0, 0, 0),
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -91,6 +91,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 GradientButton(
                   label: "SIGN UP",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                   onTap: () async {
                     if (_nameController.text.isEmpty ||
                         _emailController.text.isEmpty ||
@@ -152,7 +157,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     const Text(
                       "Already have an account?",
-                      style: TextStyle(color: Colors.white70, fontSize: 17),
+                      style: TextStyle(
+                        color: Color.fromARGB(179, 0, 0, 0),
+                        fontSize: 16,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -167,8 +175,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: const Text(
                         "Login Now",
                         style: TextStyle(
-                          color: Color(0xFFFFB300),
+                          color: Color.fromARGB(255, 0, 0, 0),
                           fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
