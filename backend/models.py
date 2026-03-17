@@ -31,3 +31,10 @@ class ResetPasswordRequest(BaseModel):
     email: str
     otp: str
     new_password: str
+
+class LectureCreateRequest(BaseModel):
+    email: str
+    title: str
+    course_code: Optional[str] = None
+    instructor: Optional[str] = None
+    transcript: str

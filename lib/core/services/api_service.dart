@@ -136,6 +136,38 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// ================= LECTURES =================
+  static Future<Map<String, dynamic>> saveLecture({
+    required String email,
+    required String title,
+    String? courseCode,
+    String? instructor,
+    required String transcript,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/lectures"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "email": email,
+        "title": title,
+        "course_code": courseCode,
+        "instructor": instructor,
+        "transcript": transcript,
+      }),
+    );
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> getLectures(String email) async {
+    final response = await http.get(Uri.parse("$baseUrl/lectures/$email"));
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> getLectureDetail(String lectureId) async {
+    final response = await http.get(Uri.parse("$baseUrl/lecture/$lectureId"));
+    return _handleResponse(response);
+  }
+
   /// ================= COMMON RESPONSE HANDLER =================
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final data = jsonDecode(response.body);

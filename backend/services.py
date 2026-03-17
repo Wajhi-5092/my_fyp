@@ -57,8 +57,8 @@ def auto_detect_code_request(user_input):
 
 def chat_with_llm(user_message, styles=[], code_request=False, only_code=False, language=None, history=None):
     style_instruction = " ".join([STYLE_PROMPTS[s] for s in styles if s in STYLE_PROMPTS])
-    prompt = style_instruction + "\n\n" + user_message if style_instruction else user_message
 
+    prompt = user_message
     if code_request:
         lang = language if language else 'any'
         prompt += f"\nGenerate the answer as executable {lang} code."
@@ -67,6 +67,15 @@ def chat_with_llm(user_message, styles=[], code_request=False, only_code=False, 
 
     # Build messages list
     messages = history.copy() if history else []
+    
+    # Add system message with instructions globally, instead of merging into user_message
+    if style_instruction:
+        # Check if the first message is already a system message
+        if messages and messages[0].get("role") == "system":
+            messages[0] = {"role": "system", "content": style_instruction}
+        else:
+            messages.insert(0, {"role": "system", "content": style_instruction})
+
     messages.append({"role": "user", "content": prompt})
 
     response = groq_client.chat.completions.create(

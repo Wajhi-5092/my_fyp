@@ -75,8 +75,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       if (res["success"] && mounted) {
         setState(() {
           // Reverse because list is reverse: true
-          // Map 'content' (backend) to 'text' (frontend)
-          messages = (res["data"]["messages"] as List).reversed.map((m) {
+          // Filter out 'system' messages and then map 'content' (backend) to 'text' (frontend)
+          messages = (res["data"]["messages"] as List)
+              .where((m) => m["role"] != "system")
+              .toList()
+              .reversed
+              .map((m) {
             return {"role": m["role"], "text": m["text"] ?? m["content"] ?? ""};
           }).toList();
         });
@@ -254,6 +258,22 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        leadingWidth: 100,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu_open_rounded),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
+          ],
+        ),
         iconTheme: const IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
         title: const Text(
           "AI Assistant",
@@ -329,23 +349,23 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                           Icon(
                             Icons.chat_bubble_outline_rounded,
                             size: 100,
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: Colors.black.withValues(alpha: 0.05),
                           ),
                           const SizedBox(height: 24),
                           const Text(
-                            "Start a conversation...",
+                            "What can I help with?",
                             style: TextStyle(
-                              color: Colors.white54,
+                              color: Colors.black87,
                               fontSize: 24,
-                              fontWeight: FontWeight.w300,
-                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          const Text(
                             "Ask me anything you want!",
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: Colors.black54,
                               fontSize: 16,
                             ),
                           ),

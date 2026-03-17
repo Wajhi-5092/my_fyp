@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 import asyncio
-from models import PromptRequest
+from models import PromptRequest, LectureCreateRequest
 from services import chat_with_llm, transcribe_file_bytes, generate_chat_title
 from config import groq_client, deepgram_client
 from database import db
@@ -106,3 +106,48 @@ async def transcribe_audio(file: UploadFile = File(...)):
     file_bytes = await file.read()
     transcript = await asyncio.to_thread(transcribe_file_bytes, file_bytes)
     return {"transcript": transcript}
+
+# ===== LECTURE ENDPOINTS =====
+@router.post("/lectures")
+async def save_lecture(req: LectureCreateRequest):
+    lecture_id = str(uuid.uuid4())
+    lecture_data = {
+        "lecture_id": lecture_id,
+        "user_email": req.email,
+        "title": req.title,
+        "course_code": req.course_code,
+        "instructor": req.instructor,
+        "transcript": req.transcript,
+        "created_at": datetime.utcnow()
+    }
+    db.lectures.insert_one(lecture_data)
+    return {"success": True, "lecture_id": lecture_id}
+
+@router.get("/lectures/{email}")
+async def get_lectures(email: str):
+    lectures = db.lectures.find({"user_email": email}).sort("created_at", -1)
+    return [
+        {
+            "lecture_id": l["lecture_id"],
+            "title": l["title"],
+            "course_code": l.get("course_code"),
+            "instructor": l.get("instructor"),
+            "created_at": l["created_at"].isoformat()
+        }
+        for l in lectures
+    ]
+
+@router.get("/lecture/{lecture_id}")
+async def get_lecture_detail(lecture_id: str):
+    lecture = db.lectures.find_one({"lecture_id": lecture_id})
+    if not lecture:
+        raise HTTPException(status_code=404, detail="Lecture not found")
+    
+    return {
+        "lecture_id": lecture["lecture_id"],
+        "title": lecture["title"],
+        "course_code": lecture.get("course_code"),
+        "instructor": lecture.get("instructor"),
+        "transcript": lecture["transcript"],
+        "created_at": lecture["created_at"].isoformat()
+    }

@@ -24,6 +24,10 @@ class ChatDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final filteredChats = chats
+        .where((chat) => chat['last_message'] != "New Chat")
+        .toList();
+
     return Drawer(
       backgroundColor: Colors.white,
       child: SafeArea(
@@ -106,18 +110,18 @@ class ChatDrawer extends StatelessWidget {
 
             /// CHAT LIST
             Expanded(
-              child: chats.isEmpty
+              child: filteredChats.isEmpty
                   ? Center(
                       child: Text(
-                        "No history yet",
+                        "No chats",
                         style: TextStyle(color: Colors.grey.shade400),
                       ),
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      itemCount: chats.length,
+                      itemCount: filteredChats.length,
                       itemBuilder: (context, index) {
-                        final chat = chats[index];
+                        final chat = filteredChats[index];
                         final isSelected = chat['chat_id'] == activeChatId;
 
                         return Container(

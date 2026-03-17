@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import '../../home/screens/ai_screen.dart';
 import '../services/speech_service.dart';
+import '../../../core/services/api_service.dart';
+import '../../../core/services/style_service.dart';
+import '../../../core/widgets/custom_snackbar.dart';
+import 'package:intl/intl.dart';
 
 class SpeechScreen extends StatefulWidget {
-  const SpeechScreen({super.key});
+  final String? lectureTitle;
+  final String? courseCode;
+  final String? instructor;
+
+  const SpeechScreen({
+    super.key,
+    this.lectureTitle,
+    this.courseCode,
+    this.instructor,
+  });
 
   @override
   State<SpeechScreen> createState() => _SpeechScreenState();
@@ -22,7 +36,20 @@ class _SpeechScreenState extends State<SpeechScreen> {
   String _previousText = '';
 
   @override
+  void initState() {
+    super.initState();
+    _textController.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
+    _textController.removeListener(_onTextChanged);
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -105,9 +132,9 @@ class _SpeechScreenState extends State<SpeechScreen> {
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text(
-          "Voice Assistant",
-          style: TextStyle(
+        title: Text(
+          widget.lectureTitle ?? "Voice Assistant",
+          style: const TextStyle(
             color: Color.fromARGB(255, 0, 0, 0),
             fontWeight: FontWeight.bold,
           ),
@@ -120,44 +147,71 @@ class _SpeechScreenState extends State<SpeechScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Response Container (Glassmorphism)
             Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(
-                    103,
-                    39,
-                    46,
-                    63,
-                  ).withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: TextField(
-                  controller: _textController,
-                  scrollController: _scrollController,
-                  maxLines: null,
-                  expands: true,
-                  style: TextStyle(
-                    fontSize: 20,
-                    height: 1.6,
-                    color: _isListening ? Colors.white : Colors.white,
-                    fontWeight: _isListening
-                        ? FontWeight.w500
-                        : FontWeight.normal,
+              child: Stack(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(
+                        103,
+                        39,
+                        46,
+                        63,
+                      ).withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: TextField(
+                      controller: _textController,
+                      scrollController: _scrollController,
+                      maxLines: null,
+                      expands: true,
+                      style: TextStyle(
+                        fontSize: 20,
+                        height: 1.6,
+                        color: _isListening ? Colors.white : Colors.white,
+                        fontWeight: _isListening
+                            ? FontWeight.w500
+                            : FontWeight.normal,
+                      ),
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Speak something...',
+                        hintStyle: TextStyle(color: Colors.white24),
+                      ),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Speak something...',
-                    hintStyle: TextStyle(color: Colors.white24),
-                  ),
-                ),
+                  if (_textController.text.isNotEmpty &&
+                      _textController.text !=
+                          'Tap the microphone to start listening...')
+                    Positioned(
+                      top: 20,
+                      right: 30,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.copy_rounded,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(text: _textController.text),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Text copied to clipboard!"),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
               ),
             ),
 
@@ -192,15 +246,48 @@ class _SpeechScreenState extends State<SpeechScreen> {
                           _buildActionBtn(
                             label: "PROCEED",
                             color: const Color(0xFFFFB300),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AiAssistantScreen(
-                                    initialPrompt: _textController.text,
+                            onTap: () async {
+                              final email = StyleService.currentUserEmail;
+                              if (email != null) {
+                                final res = await ApiService.saveLecture(
+                                  email: email,
+                                  title: widget.lectureTitle ?? "Untitled Lecture",
+                                  courseCode: widget.courseCode,
+                                  instructor: widget.instructor,
+                                  transcript: _textController.text,
+                                );
+
+                                if (res["success"] == true) {
+                                  if (context.mounted) {
+                                    CustomSnackBar.show(context, "Lecture saved successfully!");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AiAssistantScreen(
+                                          initialPrompt: _textController.text,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    CustomSnackBar.show(
+                                      context,
+                                      res["error"] ?? "Failed to save lecture",
+                                      isError: true,
+                                    );
+                                  }
+                                }
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AiAssistantScreen(
+                                      initialPrompt: _textController.text,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             },
                             isOutline: false,
                           ),
