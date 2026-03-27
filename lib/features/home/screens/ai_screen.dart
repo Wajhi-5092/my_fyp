@@ -42,8 +42,6 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
     if (widget.initialPrompt != null && widget.initialPrompt!.isNotEmpty) {
       await createNewChat(initialText: widget.initialPrompt);
-    } else if (userChats.isNotEmpty) {
-      loadChatHistory(userChats.first['chat_id']);
     } else {
       await createNewChat();
     }
@@ -81,8 +79,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
               .toList()
               .reversed
               .map((m) {
-            return {"role": m["role"], "text": m["text"] ?? m["content"] ?? ""};
-          }).toList();
+                return {
+                  "role": m["role"],
+                  "text": m["text"] ?? m["content"] ?? "",
+                };
+              })
+              .toList();
         });
       }
     } finally {
