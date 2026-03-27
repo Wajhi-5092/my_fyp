@@ -6,7 +6,6 @@ import '../services/speech_service.dart';
 import '../../../core/services/api_service.dart';
 import '../../../core/services/style_service.dart';
 import '../../../core/widgets/custom_snackbar.dart';
-import 'package:intl/intl.dart';
 
 class SpeechScreen extends StatefulWidget {
   final String? lectureTitle;
@@ -251,7 +250,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
                               if (email != null) {
                                 final res = await ApiService.saveLecture(
                                   email: email,
-                                  title: widget.lectureTitle ?? "Untitled Lecture",
+                                  title:
+                                      widget.lectureTitle ?? "Untitled Lecture",
                                   courseCode: widget.courseCode,
                                   instructor: widget.instructor,
                                   transcript: _textController.text,
@@ -259,7 +259,10 @@ class _SpeechScreenState extends State<SpeechScreen> {
 
                                 if (res["success"] == true) {
                                   if (context.mounted) {
-                                    CustomSnackBar.show(context, "Lecture saved successfully!");
+                                    CustomSnackBar.show(
+                                      context,
+                                      "Lecture saved successfully!",
+                                    );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
