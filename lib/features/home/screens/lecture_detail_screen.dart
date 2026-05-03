@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import '../../../core/services/api_service.dart';
 import 'ai_screen.dart';
@@ -163,50 +165,58 @@ class _LectureDetailScreenState extends State<LectureDetailScreen> {
                   const SizedBox(height: 14),
                   LectureSectionCard(
                     title: "Prompt",
-                    child: SelectableText(
-                      lecturePrompt.isNotEmpty
+                    onCopy: lecturePrompt.isNotEmpty
+                        ? () {
+                            Clipboard.setData(ClipboardData(text: lecturePrompt));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Prompt copied to clipboard")),
+                            );
+                          }
+                        : null,
+                    child: MarkdownBody(
+                      data: lecturePrompt.isNotEmpty
                           ? lecturePrompt
                           : "No prompt saved for this lecture.",
+                      selectable: true,
                     ),
                   ),
                   const SizedBox(height: 14),
                   if (_chatResponses.isNotEmpty)
-                    LectureSectionCard(
-                      title: "AI Responses (${_chatResponses.length})",
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _chatResponses
-                            .asMap()
-                            .entries
-                            .map(
-                              (entry) => Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Response ${entry.key + 1}",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF374151),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    SelectableText(entry.value),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList(),
+                    ..._chatResponses.asMap().entries.map(
+                      (entry) => Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: LectureSectionCard(
+                          title:
+                              "AI Response ${entry.key + 1} of ${_chatResponses.length}",
+                          onCopy: () {
+                            Clipboard.setData(ClipboardData(text: entry.value));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Response copied to clipboard")),
+                            );
+                          },
+                          child: MarkdownBody(
+                            data: entry.value,
+                            selectable: true,
+                          ),
+                        ),
                       ),
                     )
                   else
                     LectureSectionCard(
                       title: "AI Response",
-                      child: SelectableText(
-                        aiResponse.isNotEmpty
+                      onCopy: aiResponse.isNotEmpty
+                          ? () {
+                              Clipboard.setData(ClipboardData(text: aiResponse));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Response copied to clipboard")),
+                              );
+                            }
+                          : null,
+                      child: MarkdownBody(
+                        data: aiResponse.isNotEmpty
                             ? aiResponse
                             : "No AI response generated yet.",
+                        selectable: true,
                       ),
                     ),
                   const SizedBox(height: 20),

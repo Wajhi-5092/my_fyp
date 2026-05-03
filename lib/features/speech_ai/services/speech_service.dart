@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:audio_session/audio_session.dart';
 
 class SpeechService {
   final SpeechToText _speech = SpeechToText();
@@ -18,6 +19,27 @@ class SpeechService {
       },
       debugLogging: true,
     );
+  }
+
+  /// Configure audio session for noise cancellation
+  Future<void> configureAudioSession(bool enableNoiseCancel) async {
+    final session = await AudioSession.instance;
+    if (enableNoiseCancel) {
+      await session.configure(AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+        avAudioSessionCategoryOptions:
+            AVAudioSessionCategoryOptions.allowBluetooth |
+                AVAudioSessionCategoryOptions.defaultToSpeaker,
+        avAudioSessionMode: AVAudioSessionMode.voiceChat, // Triggers system noise suppression
+        androidAudioAttributes: AndroidAudioAttributes(
+          contentType: AndroidAudioContentType.speech,
+          usage: AndroidAudioUsage.voiceCommunication,
+        ),
+        androidAudioFocusGainType: AndroidAudioFocusGainType.gainTransient,
+      ));
+    } else {
+      await session.configure(const AudioSessionConfiguration.speech());
+    }
   }
 
   /// Start listening (with auto-restart)

@@ -31,12 +31,18 @@ class _SpeechScreenState extends State<SpeechScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isListening = false;
   bool _isRestarting = false;
+  bool _isNoiseCancelEnabled = true; // Enabled by default
   String _previousText = '';
 
   @override
   void initState() {
     super.initState();
     _textController.addListener(_onTextChanged);
+    _setupAudioSession();
+  }
+
+  Future<void> _setupAudioSession() async {
+    await _speechService.configureAudioSession(_isNoiseCancelEnabled);
   }
 
   void _onTextChanged() {
@@ -66,6 +72,9 @@ class _SpeechScreenState extends State<SpeechScreen> {
   Future<void> _startListening() async {
     if (_isRestarting && _isListening) return;
     _isRestarting = true;
+
+    // Ensure audio session is configured before starting
+    await _speechService.configureAudioSession(_isNoiseCancelEnabled);
 
     final available = await _speechService.init();
 
@@ -107,6 +116,26 @@ class _SpeechScreenState extends State<SpeechScreen> {
     }
   }
 
+  Future<void> _toggleNoiseCancellation() async {
+    setState(() {
+      _isNoiseCancelEnabled = !_isNoiseCancelEnabled;
+    });
+    await _speechService.configureAudioSession(_isNoiseCancelEnabled);
+
+    if (!mounted) return;
+
+    if (_isListening) {
+      // If currently listening, we might need to restart to apply session changes
+      // but usually the OS handles it. For now just show a snackbar.
+      CustomSnackBar.show(
+        context,
+        _isNoiseCancelEnabled
+            ? "Noise Cancellation On"
+            : "Noise Cancellation Off",
+      );
+    }
+  }
+
   void _handleRetry() {
     setState(() {
       _textController.text = 'Tap the microphone to start listening...';
@@ -127,38 +156,32 @@ class _SpeechScreenState extends State<SpeechScreen> {
 
       if (res["success"] == true) {
         final lectureId = res["data"]?["lecture_id"]?.toString();
-        if (context.mounted) {
-          CustomSnackBar.show(
-            context,
-            "Lecture saved successfully!",
-          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AiAssistantScreen(
-                initialPrompt: _textController.text,
-                lectureId: lectureId,
-                persistInitialResponseToLecture: true,
-              ),
+        if (!mounted) return;
+        CustomSnackBar.show(context, "Lecture saved successfully!");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AiAssistantScreen(
+              initialPrompt: _textController.text,
+              lectureId: lectureId,
+              persistInitialResponseToLecture: true,
             ),
-          );
-        }
+          ),
+        );
       } else {
-        if (context.mounted) {
-          CustomSnackBar.show(
-            context,
-            res["error"] ?? "Failed to save lecture",
-            isError: true,
-          );
-        }
+        if (!mounted) return;
+        CustomSnackBar.show(
+          context,
+          res["error"] ?? "Failed to save lecture",
+          isError: true,
+        );
       }
     } else {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AiAssistantScreen(
-            initialPrompt: _textController.text,
-          ),
+          builder: (context) =>
+              AiAssistantScreen(initialPrompt: _textController.text),
         ),
       );
     }
@@ -166,7 +189,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final showActionButtons = _textController.text.isNotEmpty &&
+    final showActionButtons =
+        _textController.text.isNotEmpty &&
         !_isListening &&
         _textController.text != 'Tap the microphone to start listening...';
 
@@ -198,8 +222,10 @@ class _SpeechScreenState extends State<SpeechScreen> {
             ),
             SpeechControlPanel(
               isListening: _isListening,
+              isNoiseCancelEnabled: _isNoiseCancelEnabled,
               showActionButtons: showActionButtons,
               onToggleListening: _toggleListening,
+              onToggleNoiseCancel: _toggleNoiseCancellation,
               onRetry: _handleRetry,
               onProceed: _handleProceed,
             ),

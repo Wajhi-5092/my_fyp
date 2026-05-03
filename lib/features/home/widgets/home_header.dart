@@ -20,12 +20,7 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(
-        top: 60,
-        left: 24,
-        right: 24,
-        bottom: 40,
-      ),
+      padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 40),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -86,10 +81,7 @@ class HomeHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              StatCard(
-                value: lecturesCount.toString(),
-                label: "Lectures",
-              ),
+              StatCard(value: lecturesCount.toString(), label: "Lectures"),
               GestureDetector(
                 onTap: onNotesTap,
                 child: StatCard(
