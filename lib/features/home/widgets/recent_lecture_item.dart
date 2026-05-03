@@ -5,6 +5,7 @@ class RecentLectureItem extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
   const RecentLectureItem({
     super.key,
@@ -12,6 +13,7 @@ class RecentLectureItem extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -74,28 +76,42 @@ class RecentLectureItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F1FF),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "AI",
-                      style: TextStyle(
-                        color: Color(0xFF4A90E2),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
+              if (onDelete != null)
+                IconButton(
+                  onPressed: onDelete,
+                  tooltip: "Delete lecture",
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.redAccent,
+                    size: 22,
+                  ),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F1FF),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "AI",
+                        style: TextStyle(
+                          color: Color(0xFF4A90E2),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 2),
-                    Icon(Icons.check, size: 12, color: Color(0xFF4A90E2)),
-                  ],
+                      SizedBox(width: 2),
+                      Icon(Icons.check, size: 12, color: Color(0xFF4A90E2)),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),

@@ -1,16 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../core/services/api_service.dart';
-import '../widgets/message_bubble.dart';
-import '../widgets/style_dialog.dart';
-import '../widgets/chat_input.dart';
+import '../widgets/ai/message_bubble.dart';
+import '../widgets/ai/style_dialog.dart';
+import '../widgets/ai/chat_input.dart';
 import '../../../core/services/style_service.dart';
-import '../widgets/chat_drawer.dart';
+import '../widgets/ai/chat_drawer.dart';
 import '../../auth/screens/login_screen.dart';
+import '../widgets/ai/ai_empty_state.dart';
 
 class AiAssistantScreen extends StatefulWidget {
   final String? initialPrompt;
-  const AiAssistantScreen({super.key, this.initialPrompt});
+  final String? lectureId;
+  final bool persistInitialResponseToLecture;
+  final bool autoSendInitialPrompt;
+  final String? initialChatId;
+
+  const AiAssistantScreen({
+    super.key,
+    this.initialPrompt,
+    this.lectureId,
+    this.persistInitialResponseToLecture = false,
+    this.autoSendInitialPrompt = true,
+    this.initialChatId,
+  });
   @override
   State<AiAssistantScreen> createState() => _AiAssistantScreenState();
 }
@@ -28,6 +41,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   bool stopTyping = false;
   bool isLoadingChats = false;
   bool isLoadingHistory = false;
+  bool _savedInitialLectureResponse = false;
 
   @override
   void initState() {
@@ -40,8 +54,22 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
     await fetchUserChats();
 
+    if (widget.initialChatId != null && widget.initialChatId!.isNotEmpty) {
+      await loadChatHistory(widget.initialChatId!);
+      return;
+    }
+
     if (widget.initialPrompt != null && widget.initialPrompt!.isNotEmpty) {
-      await createNewChat(initialText: widget.initialPrompt);
+      if (widget.autoSendInitialPrompt) {
+        await createNewChat(initialText: widget.initialPrompt);
+      } else {
+        await createNewChat();
+        if (mounted) {
+          setState(() {
+            controller.text = widget.initialPrompt!;
+          });
+        }
+      }
     } else {
       await createNewChat();
     }
@@ -168,6 +196,21 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
       if (result["success"]) {
         String fullReply = result["data"]["response"];
+        if (widget.persistInitialResponseToLecture &&
+            !_savedInitialLectureResponse &&
+            widget.lectureId != null &&
+            widget.initialPrompt != null &&
+            text == widget.initialPrompt) {
+          final saveRes = await ApiService.updateLectureAiResponse(
+            lectureId: widget.lectureId!,
+            aiResponse: fullReply,
+            lecturePrompt: widget.initialPrompt,
+            chatId: currentChatId,
+          );
+          if (saveRes["success"] == true) {
+            _savedInitialLectureResponse = true;
+          }
+        }
         await animateTyping(fullReply);
         fetchUserChats(); // Refresh list to update last message
       } else {
@@ -331,50 +374,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     child: CircularProgressIndicator(color: Colors.blueAccent),
                   )
                 : messages.isEmpty && !isTyping
-                ? Center(
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 1000),
-                      curve: Curves.easeOutCubic,
-                      builder: (context, value, child) {
-                        return Opacity(
-                          opacity: value,
-                          child: Transform.translate(
-                            offset: Offset(0, 30 * (1 - value)),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.chat_bubble_outline_rounded,
-                            size: 100,
-                            color: Colors.black.withValues(alpha: 0.05),
-                          ),
-                          const SizedBox(height: 24),
-                          const Text(
-                            "What can I help with?",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "Ask me anything you want!",
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
+                ? const AiEmptyState()
                 : ListView.builder(
                     controller: _scrollController,
                     reverse: true,

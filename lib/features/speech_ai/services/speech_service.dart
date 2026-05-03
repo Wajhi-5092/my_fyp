@@ -4,14 +4,15 @@ import 'package:speech_to_text/speech_to_text.dart';
 class SpeechService {
   final SpeechToText _speech = SpeechToText();
 
+  bool _shouldListen = false;
+  Function(String)? _onResultCallback;
+
   bool get isListening => _speech.isListening;
 
-  Future<bool> init({Function(String)? onStatus}) async {
+  /// Initialize speech
+  Future<bool> init() async {
     return await _speech.initialize(
-      onStatus: (status) {
-        debugPrint("Speech status: $status");
-        if (onStatus != null) onStatus(status);
-      },
+      onStatus: _handleStatus,
       onError: (error) {
         debugPrint("Speech error: $error");
       },
@@ -19,7 +20,19 @@ class SpeechService {
     );
   }
 
-  Future<void> listen(Function(String) onResult) async {
+  /// Start listening (with auto-restart)
+  Future<void> startListening(
+    Function(String) onResult, {
+    String locale = 'en_US',
+  }) async {
+    _shouldListen = true;
+    _onResultCallback = onResult;
+
+    await _startListeningInternal(locale);
+  }
+
+  /// Internal listen method
+  Future<void> _startListeningInternal(String locale) async {
     if (!_speech.isAvailable) {
       debugPrint("Speech not available");
       return;
@@ -27,20 +40,34 @@ class SpeechService {
 
     await _speech.listen(
       onResult: (result) {
-        onResult(result.recognizedWords);
+        if (_onResultCallback != null) {
+          _onResultCallback!(result.recognizedWords);
+        }
       },
       listenOptions: SpeechListenOptions(
         partialResults: true,
         cancelOnError: false,
-        listenMode: ListenMode.dictation, // Smoother for continuous speech
+        listenMode: ListenMode.dictation,
       ),
-      pauseFor: const Duration(seconds: 30), // Increased from 5s
-      listenFor: const Duration(minutes: 5),
-      localeId: 'en_US',
+      pauseFor: const Duration(seconds: 30),
+      listenFor: const Duration(minutes: 40),
+      localeId: locale,
     );
   }
 
-  Future<void> stop() async {
+  /// Handle status changes (auto-restart logic)
+  void _handleStatus(String status) {
+    debugPrint("Speech status: $status");
+
+    if (_shouldListen && (status == "done" || status == "notListening")) {
+      debugPrint("Restarting listening...");
+      _startListeningInternal('en_US');
+    }
+  }
+
+  /// Stop listening
+  Future<void> stopListening() async {
+    _shouldListen = false;
     await _speech.stop();
   }
 }

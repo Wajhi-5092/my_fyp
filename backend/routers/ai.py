@@ -110,6 +110,10 @@ async def transcribe_audio(file: UploadFile = File(...)):
 # ===== LECTURE ENDPOINTS =====
 @router.post("/lectures")
 async def save_lecture(req: LectureCreateRequest):
+    ai_title = req.ai_title
+    if not ai_title and req.ai_response:
+        ai_title = generate_chat_title(req.ai_response)
+
     lecture_id = str(uuid.uuid4())
     lecture_data = {
         "lecture_id": lecture_id,
@@ -118,6 +122,10 @@ async def save_lecture(req: LectureCreateRequest):
         "course_code": req.course_code,
         "instructor": req.instructor,
         "transcript": req.transcript,
+        "lecture_prompt": req.lecture_prompt or req.transcript,
+        "ai_response": req.ai_response,
+        "ai_title": ai_title,
+        "chat_id": req.chat_id,
         "created_at": datetime.utcnow()
     }
     db.lectures.insert_one(lecture_data)
@@ -132,6 +140,10 @@ async def get_lectures(email: str):
             "title": l["title"],
             "course_code": l.get("course_code"),
             "instructor": l.get("instructor"),
+            "lecture_prompt": l.get("lecture_prompt"),
+            "ai_response": l.get("ai_response"),
+            "ai_title": l.get("ai_title"),
+            "chat_id": l.get("chat_id"),
             "created_at": l["created_at"].isoformat()
         }
         for l in lectures
@@ -149,5 +161,41 @@ async def get_lecture_detail(lecture_id: str):
         "course_code": lecture.get("course_code"),
         "instructor": lecture.get("instructor"),
         "transcript": lecture["transcript"],
+        "lecture_prompt": lecture.get("lecture_prompt"),
+        "ai_response": lecture.get("ai_response"),
+        "ai_title": lecture.get("ai_title"),
+        "chat_id": lecture.get("chat_id"),
         "created_at": lecture["created_at"].isoformat()
     }
+
+@router.delete("/lecture/{lecture_id}")
+async def delete_lecture(lecture_id: str):
+    result = db.lectures.delete_one({"lecture_id": lecture_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lecture not found")
+    return {"success": True}
+
+@router.patch("/lecture/{lecture_id}/ai-response")
+async def update_lecture_ai_response(lecture_id: str, req: dict):
+    ai_response = req.get("ai_response")
+    if not ai_response:
+        raise HTTPException(status_code=400, detail="ai_response is required")
+    lecture_prompt = req.get("lecture_prompt")
+    ai_title = req.get("ai_title") or generate_chat_title(ai_response)
+    chat_id = req.get("chat_id")
+
+    set_data = {"ai_response": ai_response, "ai_title": ai_title}
+    if lecture_prompt:
+        set_data["lecture_prompt"] = lecture_prompt
+    if chat_id:
+        set_data["chat_id"] = chat_id
+
+    result = db.lectures.update_one(
+        {"lecture_id": lecture_id},
+        {"$set": set_data}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lecture not found")
+
+    return {"success": True}

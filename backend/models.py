@@ -38,3 +38,7 @@ class LectureCreateRequest(BaseModel):
     course_code: Optional[str] = None
     instructor: Optional[str] = None
     transcript: str
+    lecture_prompt: Optional[str] = None
+    ai_response: Optional[str] = None
+    ai_title: Optional[str] = None
+    chat_id: Optional[str] = None

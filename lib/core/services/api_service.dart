@@ -143,6 +143,10 @@ class ApiService {
     String? courseCode,
     String? instructor,
     required String transcript,
+    String? lecturePrompt,
+    String? aiResponse,
+    String? aiTitle,
+    String? chatId,
   }) async {
     final response = await http.post(
       Uri.parse("$baseUrl/lectures"),
@@ -153,6 +157,30 @@ class ApiService {
         "course_code": courseCode,
         "instructor": instructor,
         "transcript": transcript,
+        "lecture_prompt": lecturePrompt,
+        "ai_response": aiResponse,
+        "ai_title": aiTitle,
+        "chat_id": chatId,
+      }),
+    );
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> updateLectureAiResponse({
+    required String lectureId,
+    required String aiResponse,
+    String? lecturePrompt,
+    String? aiTitle,
+    String? chatId,
+  }) async {
+    final response = await http.patch(
+      Uri.parse("$baseUrl/lecture/$lectureId/ai-response"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "ai_response": aiResponse,
+        "lecture_prompt": lecturePrompt,
+        "ai_title": aiTitle,
+        "chat_id": chatId,
       }),
     );
     return _handleResponse(response);
@@ -165,6 +193,11 @@ class ApiService {
 
   static Future<Map<String, dynamic>> getLectureDetail(String lectureId) async {
     final response = await http.get(Uri.parse("$baseUrl/lecture/$lectureId"));
+    return _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> deleteLecture(String lectureId) async {
+    final response = await http.delete(Uri.parse("$baseUrl/lecture/$lectureId"));
     return _handleResponse(response);
   }
 

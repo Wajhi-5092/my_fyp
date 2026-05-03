@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../../core/services/style_service.dart';
-import '../widgets/style_dialog.dart';
+import '../widgets/ai/style_dialog.dart';
 import '../../speech_ai/screens/speech_screen.dart';
 import 'ai_screen.dart';
 import '../../notes/screens/notes_screen.dart';
 import '../../auth/screens/login_screen.dart';
-import '../widgets/stat_card.dart';
-import '../widgets/recent_lecture_item.dart';
 import '../widgets/lecture_dialog.dart';
 import '../../../core/services/api_service.dart';
 import 'package:intl/intl.dart';
+import 'lecture_detail_screen.dart';
+
+import '../widgets/home_header.dart';
+import '../widgets/start_lecture_card.dart';
+import '../widgets/quick_actions_row.dart';
+import '../widgets/recent_lectures_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +48,51 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } else {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _deleteLecture(Map<String, dynamic> lecture) async {
+    final lectureId = lecture["lecture_id"]?.toString();
+    if (lectureId == null || lectureId.isEmpty) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Delete lecture?"),
+        content: Text(
+          "This will remove \"${lecture["title"] ?? "Untitled"}\" from recent lectures.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text(
+              "Delete",
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final res = await ApiService.deleteLecture(lectureId);
+    if (!mounted) return;
+
+    if (res["success"] == true) {
+      await _loadLectures();
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Lecture deleted")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(res["error"] ?? "Failed to delete lecture")),
+      );
     }
   }
 
@@ -89,107 +138,26 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// HEADER SECTION
-              Container(
-                padding: const EdgeInsets.only(
-                  top: 60,
-                  left: 24,
-                  right: 24,
-                  bottom: 40,
-                ),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF141F46), Color(0xFF1E3A8A)],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _getGreeting(),
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.6),
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Serif',
-                              ),
-                            ),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () => _showProfileMenu(context),
-                          child: CircleAvatar(
-                            radius: 28,
-                            backgroundColor: const Color(0xFF3B82F6),
-                            child: Text(
-                              name[0].toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+              HomeHeader(
+                greeting: _getGreeting(),
+                name: name,
+                lecturesCount: _lectures.length,
+                onProfileTap: () => _showProfileMenu(context),
+                onNotesTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotesScreen(),
                     ),
-                    const SizedBox(height: 32),
-
-                    /// STATS ROW
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        StatCard(
-                          value: _lectures.length.toString(),
-                          label: "Lectures",
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const NotesScreen(),
-                              ),
-                            ).then((_) => _loadLectures());
-                          },
-                          child: StatCard(
-                            value: _lectures.length.toString(),
-                            label: "AI Notes",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ).then((_) => _loadLectures());
+                },
               ),
-
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// START NEW LECTURE CARD
-                    GestureDetector(
+                    StartLectureCard(
                       onTap: () {
                         showDialog(
                           context: context,
@@ -209,240 +177,50 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF2563EB), Color(0xFF06B6D4)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFF2563EB,
-                              ).withValues(alpha: 0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.mic,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Start New Lecture",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 6),
-                                  Text(
-                                    "Record, transcribe & generate AI notes",
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
-
                     const SizedBox(height: 32),
-
-                    /// QUICK ACTIONS
-                    const Text(
-                      "Quick Actions",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildSmallActionCard(
-                            context,
-                            "AI Assistant",
-                            Icons.auto_awesome,
-                            Colors.green,
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AiAssistantScreen(),
-                              ),
-                            ).then((_) => setState(() {})),
+                    QuickActionsRow(
+                      onAiAssistantTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AiAssistantScreen(),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildSmallActionCard(
-                            context,
-                            "Select Style",
-                            Icons.style,
-                            Colors.orange,
-                            () => showDialog(
-                              context: context,
-                              builder: (context) => StyleDialog(
-                                initialStyles: _selectedStyles,
-                                onApply: (List<String> styles) async {
-                                  await StyleService.saveStyles(styles);
-                                  setState(() {});
-                                },
-                              ),
-                            ),
+                        ).then((_) => setState(() {}));
+                      },
+                      onStyleTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => StyleDialog(
+                            initialStyles: _selectedStyles,
+                            onApply: (List<String> styles) async {
+                              await StyleService.saveStyles(styles);
+                              setState(() {});
+                            },
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-
                     const SizedBox(height: 32),
-
-                    /// RECENT LECTURES SECTION
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Recent Lectures",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
+                    RecentLecturesList(
+                      isLoading: _isLoading,
+                      lectures: _lectures,
+                      onDelete: _deleteLecture,
+                      onTap: (lectureId) async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                LectureDetailScreen(lectureId: lectureId),
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Row(
-                            children: [
-                              Text("See all"),
-                              SizedBox(width: 4),
-                              Icon(Icons.arrow_forward, size: 16),
-                            ],
-                          ),
-                        ),
-                      ],
+                        );
+                        if (mounted) {
+                          _loadLectures();
+                        }
+                      },
+                      formatDate: _formatDate,
                     ),
-                    const SizedBox(height: 16),
-
-                    if (_isLoading)
-                      const Center(child: CircularProgressIndicator())
-                    else if (_lectures.isEmpty)
-                      Center(
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.history_outlined,
-                              size: 48,
-                              color: Colors.grey[300],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              "No recent lectures yet",
-                              style: TextStyle(color: Colors.grey[500]),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      ..._lectures
-                          .take(5)
-                          .map(
-                            (lec) => RecentLectureItem(
-                              title: lec["title"] ?? "Untitled",
-                              subtitle:
-                                  "${_formatDate(lec["created_at"])} · ${lec["course_code"] ?? lec["instructor"] ?? "No details"}",
-                              icon: Icons.auto_awesome,
-                              onTap: () async {
-                                // Show loading
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                );
-
-                                try {
-                                  final detailRes =
-                                      await ApiService.getLectureDetail(
-                                        lec["lecture_id"],
-                                      );
-                                  if (context.mounted) {
-                                    if (Navigator.canPop(context)) {
-                                      Navigator.pop(context);
-                                    } // hide loading
-                                  }
-
-                                  if (detailRes["success"] == true) {
-                                    final data = detailRes["data"];
-                                    final transcript = data["transcript"] ?? "";
-
-                                    if (context.mounted) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => AiAssistantScreen(
-                                            initialPrompt:
-                                                "Tell me about this lecture: \n\n$transcript",
-                                          ),
-                                        ),
-                                      ).then((_) => _loadLectures());
-                                    }
-                                  } else {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            detailRes["error"] ??
-                                                "Failed to load lecture",
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    if (Navigator.canPop(context)) {
-                                      Navigator.pop(context); // hide loading
-                                    }
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("Error: $e")),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                          ),
-                    const SizedBox(height: 20),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 60),
                   ],
                 ),
               ),
@@ -569,53 +347,6 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.grey[300],
       ),
       contentPadding: EdgeInsets.zero,
-    );
-  }
-
-  Widget _buildSmallActionCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Color(0xFF1F2937),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
