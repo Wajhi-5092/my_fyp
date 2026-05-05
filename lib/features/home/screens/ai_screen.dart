@@ -42,6 +42,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   bool isLoadingChats = false;
   bool isLoadingHistory = false;
   bool _savedInitialLectureResponse = false;
+  bool _autoScrollEnabled = true;
 
   @override
   void initState() {
@@ -253,7 +254,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       });
 
       await Future.delayed(const Duration(milliseconds: 5));
-      _scrollToBottom();
+      _scrollToBottom(force: false);
     }
   }
 
@@ -265,9 +266,17 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     }
   }
 
-  void _scrollToBottom() {
+  bool _isNearBottom() {
+    if (!_scrollController.hasClients) return true;
+    return _scrollController.position.pixels <= 60;
+  }
+
+  void _scrollToBottom({bool force = true}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
+        if (!force && (!_autoScrollEnabled || !_isNearBottom())) {
+          return;
+        }
         _scrollController.animateTo(
           0.0,
           duration: const Duration(milliseconds: 200),
@@ -375,13 +384,25 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   )
                 : messages.isEmpty && !isTyping
                 ? const AiEmptyState()
-                : ListView.builder(
-                    controller: _scrollController,
-                    reverse: true,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) =>
-                        MessageBubble(msg: messages[index]),
+                : NotificationListener<UserScrollNotification>(
+                    onNotification: (notification) {
+                      if (!_scrollController.hasClients) return false;
+                      final nearBottom = _isNearBottom();
+                      if (nearBottom != _autoScrollEnabled) {
+                        setState(() {
+                          _autoScrollEnabled = nearBottom;
+                        });
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      reverse: true,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) =>
+                          MessageBubble(msg: messages[index]),
+                    ),
                   ),
           ),
           ChatInput(

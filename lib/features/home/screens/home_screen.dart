@@ -96,6 +96,48 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _deleteAllLectures() async {
+    final lectureIds = _lectures
+        .map((lec) => lec["lecture_id"]?.toString() ?? "")
+        .where((id) => id.isNotEmpty)
+        .toList();
+
+    if (lectureIds.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    var deletedCount = 0;
+    var failedCount = 0;
+
+    for (final lectureId in lectureIds) {
+      final res = await ApiService.deleteLecture(lectureId);
+      if (res["success"] == true) {
+        deletedCount++;
+      } else {
+        failedCount++;
+      }
+    }
+
+    if (!mounted) return;
+
+    await _loadLectures();
+    if (!mounted) return;
+
+    if (failedCount == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Deleted $deletedCount lecture(s)")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Deleted $deletedCount lecture(s), failed to delete $failedCount.",
+          ),
+        ),
+      );
+    }
+  }
+
   String _getGreeting() {
     var hour = DateTime.now().hour;
     if (hour < 12) return "Good morning ☀️";
@@ -206,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       isLoading: _isLoading,
                       lectures: _lectures,
                       onDelete: _deleteLecture,
+                      onDeleteAll: _deleteAllLectures,
                       onTap: (lectureId) async {
                         await Navigator.push(
                           context,
