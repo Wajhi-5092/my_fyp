@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/nearby_share_screen.dart';
 
 class QuickActionsRow extends StatelessWidget {
   final VoidCallback onAiAssistantTap;
@@ -28,19 +29,35 @@ class QuickActionsRow extends StatelessWidget {
           children: [
             Expanded(
               child: _buildSmallActionCard(
-                "AI Assistant",
+                "AI Assist",
                 Icons.auto_awesome,
                 Colors.green,
                 onAiAssistantTap,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: _buildSmallActionCard(
-                "Select Style",
+                "Style",
                 Icons.style,
                 Colors.orange,
                 onStyleTap,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildSmallActionCard(
+                "Share",
+                Icons.wifi_tethering,
+                Colors.blue,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NearbyShareScreen(),
+                    ),
+                  );
+                },
               ),
             ),
           ],

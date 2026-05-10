@@ -86,7 +86,7 @@ class HomeHeader extends StatelessWidget {
                 onTap: onNotesTap,
                 child: StatCard(
                   value: lecturesCount.toString(),
-                  label: "AI Notes",
+                  label: "View AI Notes",
                 ),
               ),
             ],

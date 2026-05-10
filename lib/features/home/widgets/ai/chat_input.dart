@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class ChatInput extends StatelessWidget {
   final TextEditingController controller;
   final bool isTyping;
