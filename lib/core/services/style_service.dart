@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StyleService {
@@ -5,6 +6,9 @@ class StyleService {
   static const String _userEmailKey = 'user_email';
   static List<String> _selectedStyles = [];
   static String? _currentUserEmail;
+  
+  // Broadcast logout events globally
+  static final ValueNotifier<bool> logoutNotifier = ValueNotifier<bool>(false);
 
   static List<String> get selectedStyles => _selectedStyles;
   static String? get currentUserEmail => _currentUserEmail;

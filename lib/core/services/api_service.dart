@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart'; // kIsWeb
 import 'package:http/http.dart' as http;
+import 'package:my_fyp/core/services/style_service.dart';
 
 class ApiService {
   static String get baseUrl {
@@ -197,7 +198,9 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> deleteLecture(String lectureId) async {
-    final response = await http.delete(Uri.parse("$baseUrl/lecture/$lectureId"));
+    final response = await http.delete(
+      Uri.parse("$baseUrl/lecture/$lectureId"),
+    );
     return _handleResponse(response);
   }
 
@@ -208,6 +211,19 @@ class ApiService {
     if (response.statusCode == 200) {
       return {"success": true, "data": data};
     } else {
+      // If user is deleted from database, server returns 404 or 401
+      if (response.statusCode == 404 || response.statusCode == 401) {
+        final errorMsg = (data["detail"] ?? data["error"] ?? "")
+            .toString()
+            .toLowerCase();
+        if (errorMsg.contains("user") ||
+            errorMsg.contains("not found") ||
+            errorMsg.contains("unauthorized")) {
+          // Trigger global logout
+          StyleService.logoutNotifier.value = true;
+        }
+      }
+
       return {
         "success": false,
         "error": data["detail"] ?? data["error"] ?? "Something went wrong",
